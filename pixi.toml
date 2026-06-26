@@ -1,0 +1,18 @@
+# M2T2 grasp-prediction HTTP server environment (added for tiptop sim eval).
+# Provides a self-contained CUDA 12.8 toolchain so pointnet2_ops compiles for
+# Blackwell (sm_120) on the RTX 5090. torch/m2t2/fastapi are pip-installed by
+# build_server.sh (torch from the cu128 index).
+[project]
+name = "m2t2-server"
+version = "0.1.0"
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = "3.10.*"
+pip = "*"
+cuda-nvcc = "12.8.*"
+cuda-cudart-dev = "12.8.*"
+cuda-cccl = "12.8.*"
+cuda-libraries-dev = "12.8.*"
+gxx = "12.*"
