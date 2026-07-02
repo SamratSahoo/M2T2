@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# Build the M2T2 grasp server environment (CUDA 12.8 / sm_120 for the RTX 5090).
+# Build the M2T2 grasp server environment.
+# ARCH: set via TORCH_CUDA_ARCH_LIST env (default 8.9 for L40/Ada on Neuronic; was 12.0/sm_120 on the RTX 5090).
 set -euo pipefail
-cd /home/samrat/tamp-vla/tamp-vla/M2T2
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+: "${TORCH_CUDA_ARCH_LIST:=8.9}"; export TORCH_CUDA_ARCH_LIST
 
 echo "=== [1/7] pixi install (CUDA 12.8 toolchain) ==="
 pixi install
@@ -20,7 +22,7 @@ pixi run bash -c '
   set -e
   export CUDA_HOME="$CONDA_PREFIX"
   export PATH="$CONDA_PREFIX/bin:$PATH"
-  export TORCH_CUDA_ARCH_LIST="12.0"
+  export TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST:-8.9}"
   echo "nvcc: $(command -v nvcc)"; nvcc --version | tail -2
   pip install --no-cache-dir --no-build-isolation ./pointnet2_ops
 '
@@ -42,7 +44,7 @@ print('weights at', p, '->', os.listdir('weights'))
 
 echo "=== verify torch sees the 5090 + pointnet2_ops imports + a CUDA op ==="
 pixi run bash -c '
-  export TORCH_CUDA_ARCH_LIST="12.0"
+  export TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST:-8.9}"
   python -c "
 import torch
 print(\"torch\", torch.__version__, \"cuda\", torch.version.cuda, \"arch\", torch.cuda.get_arch_list())
