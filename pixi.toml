@@ -16,3 +16,11 @@ cuda-cudart-dev = "12.8.*"
 cuda-cccl = "12.8.*"
 cuda-libraries-dev = "12.8.*"
 gxx = "12.*"
+
+[tasks]
+# torch 2.7.1+cu128, pointnet2_ops compiled for this machine's GPUs, the m2t2 package and the server's deps.
+setup = "bash tandem_setup.sh"
+# The checkpoint, into weights/ (server.py's default --checkpoint is weights/m2t2.pth).
+download-weights = "python -c \"from huggingface_hub import snapshot_download; snapshot_download('wentao-yuan/m2t2', local_dir='weights')\""
+# The grasp server tiptop calls (POST /predict, GET /health). Pass --port to change 8123.
+server = "python server.py"
